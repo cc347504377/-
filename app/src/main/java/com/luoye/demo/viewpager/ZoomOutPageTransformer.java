@@ -7,6 +7,7 @@ import android.view.View;
 /**
  * Created by Luoye on 2016/10/19.
  */
+//Google示例动画
 class ZoomOutPageTransformer implements ViewPager.PageTransformer
 {
     private static final float MIN_SCALE = 0.1f;

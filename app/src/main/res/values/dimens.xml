@@ -4,5 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="pointsize">10dp</dimen>
     <dimen name="pointsizeb">5dp</dimen>
-    <dimen name="pointmargin">25dp</dimen>
+    <dimen name="pointmargin">20dp</dimen>
 </resources>

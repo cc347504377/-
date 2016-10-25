@@ -7,14 +7,15 @@ import android.view.View;
 /**
  * Created by Luoye on 2016/10/19.
  */
+//旋转动画
 class Rotation implements ViewPager.PageTransformer{
 
     @Override
     public void transformPage(View page, float position) {
         Log.i("Tag","position: "+ position);
-        Log.i("Tag", "view: " + page.toString());
         if (position < -1) {
             //其实并没有什么用
+            page.setAlpha(0);
         } else if (position <= 0) {
             //左侧图
 //                    page.setRotationX(0.5f);
@@ -27,6 +28,7 @@ class Rotation implements ViewPager.PageTransformer{
             page.setAlpha(1-position);
         } else if (position > 1) {
             //没卵用
+            page.setAlpha(0);
         }
     }
 }

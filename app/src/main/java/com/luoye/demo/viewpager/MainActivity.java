@@ -23,6 +23,7 @@ import java.util.List;
 import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,9 +70,12 @@ public class MainActivity extends AppCompatActivity {
         px = getResources().getDimension(R.dimen.pointmargin);
         ButterKnife.bind(this);
         datas = new ArrayList<>();
+        final Drawable drawable0 = getResources().getDrawable(R.mipmap.ic_launcher);
+        addview(drawable3);
         addview(drawable1);
         addview(drawable2);
         addview(drawable3);
+        addview(drawable1);
         viewpager.setPageTransformer(true, new Scale());
         viewpager.setAdapter(new PagerAdapter() {
             @Override
@@ -86,26 +90,49 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void destroyItem(ViewGroup container, int position, Object object) {
+                Log.i("haha", "destroy" + position);
                 container.removeView(datas.get(position));
             }
 
             @Override
             public Object instantiateItem(ViewGroup container, int position) {
+                Log.i("haha", "instant" + position);
                 container.addView(datas.get(position));
                 return datas.get(position);
             }
         });
+        viewpager.setCurrentItem(1, false);
 //        autoplay();
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 Log.i("TAG", "position: " + position + " positionoffset: " + positionOffset + " positionOffsetPixels: " + positionOffsetPixels);
-                point.setTranslationX(px*position+px*positionOffset);
+                //px为小球之间间隔 positionoffset为滑动比例 positionoffsetpx 为滑动像素
+//
+                if (position==0||position==datas.size()-2||position==datas.size()-1){
+
+                }else {
+                    point.setTranslationX(px*(position-1)+px*positionOffset);
+                }
+
+
+                //当滑动到第一张和最后一张时跳转
+                if (positionOffset == 0 && position == 0) {
+                    viewpager.setCurrentItem(datas.size()-2, false);
+                }
+                if (positionOffset == 0 && position == datas.size()-1) {
+                    viewpager.setCurrentItem(1, false);
+                }
             }
 
             @Override
             public void onPageSelected(int position) {
-//                point.setTranslationX(px*position);
+                if (position == 0) {
+                    point.setTranslationX(0);
+                }if (position== datas.size()-2){
+                    point.setTranslationX(px*(datas.size()-2-1));
+                }
+
             }
 
             @Override
@@ -140,11 +167,13 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    //网上搜的dp转px
     public static int dip2px(Context context) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (context.getResources().getDimension(R.dimen.pointmargin) * scale + 0.5f);
     }
 
+    //获得dpi
     public int getDpi(Context context) {
         DisplayMetrics metrics = new DisplayMetrics();
         Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
@@ -152,11 +181,25 @@ public class MainActivity extends AppCompatActivity {
         return metrics.densityDpi;
     }
 
-    public float getpx(){
-        Log.i("TAG","DPI: "+ getDpi(this));
-        return getResources().getDimension(R.dimen.pointmargin) * getDpi(this) / 160;
+    @OnClick({R.id.bu0, R.id.bu1, R.id.bu2, R.id.bu3, R.id.bu4})
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.bu0:
+                viewpager.setCurrentItem(0,false);
+                break;
+            case R.id.bu1:
+                viewpager.setCurrentItem(1,false);
+                break;
+            case R.id.bu2:
+                viewpager.setCurrentItem(2,false);
+                break;
+            case R.id.bu3:
+                viewpager.setCurrentItem(3,false);
+                break;
+            case R.id.bu4:
+                viewpager.setCurrentItem(4,false);
+                break;
+        }
     }
-
-
 }
 
