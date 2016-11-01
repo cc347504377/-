@@ -14,8 +14,11 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,14 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
+    @BindView(R.id.auto)
+    Button auto;
+    @BindView(R.id.bu4)
+    Button bu4;
+    @BindView(R.id.activity_main)
+    RelativeLayout activityMain;
     private float px;
+    private int position=1;
     @BindView(R.id.viewpager)
     ViewPager viewpager;
 
@@ -43,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     TextView point;
     private ImageView imageView;
     private List<View> datas;
+    private boolean isrun = false;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -102,25 +113,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         viewpager.setCurrentItem(1, false);
-//        autoplay();
         viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 Log.i("TAG", "position: " + position + " positionoffset: " + positionOffset + " positionOffsetPixels: " + positionOffsetPixels);
                 //px为小球之间间隔 positionoffset为滑动比例 positionoffsetpx 为滑动像素
 //
-                if (position==0||position==datas.size()-2||position==datas.size()-1){
+                if (position == 0 || position == datas.size() - 2 || position == datas.size() - 1) {
 
-                }else {
-                    point.setTranslationX(px*(position-1)+px*positionOffset);
+                } else {
+                    point.setTranslationX(px * (position - 1) + px * positionOffset);
                 }
 
 
                 //当滑动到第一张和最后一张时跳转
                 if (positionOffset == 0 && position == 0) {
-                    viewpager.setCurrentItem(datas.size()-2, false);
+                    viewpager.setCurrentItem(datas.size() - 2, false);
                 }
-                if (positionOffset == 0 && position == datas.size()-1) {
+                if (positionOffset == 0 && position == datas.size() - 1) {
                     viewpager.setCurrentItem(1, false);
                 }
             }
@@ -129,9 +139,11 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 if (position == 0) {
                     point.setTranslationX(0);
-                }if (position== datas.size()-2){
-                    point.setTranslationX(px*(datas.size()-2-1));
                 }
+                if (position == datas.size() - 2) {
+                    point.setTranslationX(px * (datas.size() - 2 - 1));
+                }
+                MainActivity.this.position = position;
 
             }
 
@@ -149,13 +161,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void autoplay() {
-        new Thread(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; ; i++) {
+                while (true){
+                    if (!isrun)
+                        break;
                     Message message = Message.obtain();
                     message.what = 1;
-                    message.arg1 = i;
+                    message.arg1 = (position+1)%5;
                     handler.sendMessage(message);
                     try {
                         Thread.sleep(2000);
@@ -164,7 +178,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        }).start();
+        });
+        if (isrun) {
+            isrun = false;
+            Toast.makeText(this, "终止", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(this, "开始", Toast.LENGTH_SHORT).show();
+            isrun = true;
+            thread.start();
+        }
+
     }
 
     //网上搜的dp转px
@@ -185,21 +208,26 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bu0:
-                viewpager.setCurrentItem(0,false);
+                viewpager.setCurrentItem(0, false);
                 break;
             case R.id.bu1:
-                viewpager.setCurrentItem(1,false);
+                viewpager.setCurrentItem(1, false);
                 break;
             case R.id.bu2:
-                viewpager.setCurrentItem(2,false);
+                viewpager.setCurrentItem(2, false);
                 break;
             case R.id.bu3:
-                viewpager.setCurrentItem(3,false);
+                viewpager.setCurrentItem(3, false);
                 break;
             case R.id.bu4:
-                viewpager.setCurrentItem(4,false);
+                viewpager.setCurrentItem(4, false);
                 break;
         }
+    }
+
+    @OnClick(R.id.auto)
+    public void onClick() {
+        autoplay();
     }
 }
 
